@@ -8,13 +8,6 @@ public class ClickableUnit : MonoBehaviour
     public event Action<Vector3> NewLocation = delegate { };
     public event Action<GameObject> TargetObject = delegate { };
 
-    private PlayerInput _input;
-
-    private void Awake()
-    {
-        _input = GameObject.Find("GameManager").GetComponent<PlayerInput>();
-    }
-
     private void PickNewLocation(Vector3 location)
     {
         NewLocation?.Invoke(location);
@@ -34,8 +27,13 @@ public class ClickableUnit : MonoBehaviour
         }
         else
         {
-            PickNewLocation(hit.transform.position);
-            TargetObject?.Invoke(hit.transform.gameObject);
+            Debug.Log("I am " + gameObject.name + ", Indentify " + hit.transform.name);
+            InteractWithObject(hit.transform.gameObject);
         }
+    }
+
+    protected virtual void InteractWithObject(GameObject target)
+    {
+        Debug.Log("Not Implemented in Child");
     }
 }

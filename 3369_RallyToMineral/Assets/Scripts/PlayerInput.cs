@@ -59,8 +59,7 @@ public class PlayerInput : MonoBehaviour
                     {
                         _targetUnit = col.gameObject.GetComponent<ClickableUnit>();
                         _targetUnit?.RollCall();
-                        //create NEW selection group
-
+                        //create selection GROUP
                     }
                 }
             }
@@ -74,9 +73,9 @@ public class PlayerInput : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                Debug.Log("GoTo: " + hit.point);
                 OnClick?.Invoke(hit);
 
+                Debug.Log("Click on " + hit.transform.name);
                 _targetUnit?.IdentifyHit(hit);
             }
         }
