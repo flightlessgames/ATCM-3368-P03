@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 public class ClickableUnit : MonoBehaviour
 {
     public event Action<Vector3> NewLocation = delegate { };
+
+    [SerializeField] CanvasGroup _buttonCanvas = null;
 
     protected void ChildInvokeNewLocation(Vector3 location)
     {
@@ -14,20 +17,23 @@ public class ClickableUnit : MonoBehaviour
 
     public void RollCall()
     {
-        Debug.Log("Selected Unit[s]: " + gameObject.name);
+        _buttonCanvas.gameObject.SetActive(true);
     }
 
-    public void IdentifyHit(RaycastHit hit)
+    public void Deselect()
     {
-        if (hit.transform.CompareTag("Ground"))
+        _buttonCanvas.gameObject.SetActive(false);
+    }
+
+    public void Identify(GameObject target)
+    {
+        if (target.CompareTag("Ground"))
         {
-            Debug.Log("New Location: " + hit.point);
-            NewLocation?.Invoke(hit.point);
+            NewLocation?.Invoke(target.transform.position);
         }
         else
         {
-            Debug.Log("I am " + gameObject.name + ", Indentify " + hit.transform.name);
-            InteractWithObject(hit.transform.gameObject);
+            InteractWithObject(target);
         }
     }
 
