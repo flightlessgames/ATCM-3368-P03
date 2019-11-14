@@ -13,8 +13,7 @@ public class MinerController : ClickableUnit
     [SerializeField] float _timeToMine = 2f;
     private bool _isMining = false;
     private Coroutine _miningRoutine = null;
-    private ResourcePatch _mineralPatch = null;
-    public ResourcePatch RecentResource { get { return _mineralPatch; } }
+    private ResourcePatch _minerals = null;
     private HQController _headquarters = null;
 
     private int _holdingResources = 0;
@@ -60,7 +59,7 @@ public class MinerController : ClickableUnit
         Debug.Log("Found a Mineral Patch");
 
         ChildInvokeNewLocation(mineral.MiningPoint);
-        _mineralPatch = mineral;
+        _minerals = mineral;
         mineral.AddToQueue(this);
 
         _headquarters = mineral.NearestHQ;
@@ -96,11 +95,11 @@ public class MinerController : ClickableUnit
         if (_isMining)
             _isMining = false;
         
-        if (_mineralPatch != null)
+        if (_minerals != null)
         {
-            _mineralPatch.RemoveFromQueue(this);
-            _mineralPatch.StopMining();
-            _mineralPatch = null;
+            _minerals.RemoveFromQueue(this);
+            _minerals.StopMining();
+            _minerals = null;
         }
         //if _gas
     }
@@ -109,9 +108,6 @@ public class MinerController : ClickableUnit
     #region HQ
     private void ReturnResources(HQController hq)
     {
-        if (_holdingResources <= 0) //TODO option to hide button in UI if HoldingResources <= 0
-            return;
-
         Debug.Log("Returning to Base");
         ChildInvokeNewLocation(_headquarters.transform.position);
     }
