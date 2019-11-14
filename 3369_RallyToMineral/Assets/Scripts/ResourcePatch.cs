@@ -59,9 +59,6 @@ public class ResourcePatch : MonoBehaviour
 
     public void RemoveFromQueue(MinerController scv)
     {
-        if (_miningQueue.Count == 0)
-            return;
-
         foreach(MinerController miner in _miningQueue)
         {
             if(miner == scv)
