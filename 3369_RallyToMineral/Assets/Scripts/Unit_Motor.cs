@@ -26,6 +26,7 @@ public class Unit_Motor : MonoBehaviour
 
     public void DriveToLocation(Vector3 position)
     {
+        Debug.Log("Move to: " + position);
         _agent.destination = position;
         OnMove?.Invoke();
         Debug.DrawRay(position, Vector3.up * 5f, Color.red, 1f);
