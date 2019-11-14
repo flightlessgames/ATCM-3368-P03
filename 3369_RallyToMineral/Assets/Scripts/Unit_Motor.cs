@@ -6,9 +6,9 @@ using System;
 
 [RequireComponent(typeof(ClickableUnit))]
 [RequireComponent(typeof(NavMeshAgent))]
-public class SCV_Motor : MonoBehaviour
+public class Unit_Motor : MonoBehaviour
 {
-    public event Action<Mineral_Controller> isMining = delegate { };
+    public event Action OnMove = delegate { };
 
     private ClickableUnit _controller;
     private NavMeshAgent _agent;
@@ -26,8 +26,10 @@ public class SCV_Motor : MonoBehaviour
 
     public void DriveToLocation(Vector3 position)
     {
-        Debug.Log("Drive to: " + position);
+        Debug.Log("Move to: " + position);
         _agent.destination = position;
+        OnMove?.Invoke();
         Debug.DrawRay(position, Vector3.up * 5f, Color.red, 1f);
+
     }
 }

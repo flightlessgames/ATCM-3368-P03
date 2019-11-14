@@ -6,12 +6,10 @@ using System;
 public class ClickableUnit : MonoBehaviour
 {
     public event Action<Vector3> NewLocation = delegate { };
-    public event Action<GameObject> TargetObject = delegate { };
 
-    private void PickNewLocation(Vector3 location)
+    protected void ChildInvokeNewLocation(Vector3 location)
     {
         NewLocation?.Invoke(location);
-        Debug.Log("New Location: " + location);
     }
 
     public void RollCall()
@@ -23,7 +21,8 @@ public class ClickableUnit : MonoBehaviour
     {
         if (hit.transform.CompareTag("Ground"))
         {
-            PickNewLocation(hit.point);
+            Debug.Log("New Location: " + hit.point);
+            NewLocation?.Invoke(hit.point);
         }
         else
         {
@@ -34,6 +33,6 @@ public class ClickableUnit : MonoBehaviour
 
     protected virtual void InteractWithObject(GameObject target)
     {
-        Debug.Log("Not Implemented in Child");
+        Debug.Log("Child Has Not Implemented Interaction");
     }
 }

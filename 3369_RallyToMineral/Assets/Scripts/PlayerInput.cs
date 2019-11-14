@@ -29,12 +29,12 @@ public class PlayerInput : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 100f))
             {
                 OnClick?.Invoke(hit);
-                _recentDownClick = hit.point;
+                _recentDownClick = hit.point;   //remember LMB Down Location
 
-                ClickableUnit tempUnit = hit.transform.GetComponent<ClickableUnit>();
-                if(tempUnit != null)
+                ClickableUnit tempUnit = hit.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
+                if (tempUnit != null)
                 {
-                    OnUnit?.Invoke(tempUnit);   //clicking on unit selects the unit
+                    OnUnit?.Invoke(tempUnit);   //selects the unit
                     _targetUnit = tempUnit;
                     _targetUnit.RollCall();
                 }
@@ -49,20 +49,49 @@ public class PlayerInput : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                float deltaClick = (_recentDownClick - hit.point).magnitude;
-                if(deltaClick > 5f)
+                Vector3 deltaVector = hit.point - _recentDownClick; //compare distance between LMB Down and Up
+                Vector3 halfExtent = deltaVector / 2;
+                Vector3 center = halfExtent + _recentDownClick;
+
+                #region Debug Cube
+                Debug.DrawRay(center, Vector3.up, Color.blue, 1f);
+
+                Debug.DrawLine(center + new Vector3(halfExtent.x, 0, 0), center + new Vector3(-halfExtent.x, 0, 0), Color.blue, 1f);  //debug cross-secntion
+                Debug.DrawLine(center + new Vector3(0, 0, halfExtent.z), center + new Vector3(0, 0, -halfExtent.z), Color.blue, 1f);
+
+                Debug.DrawLine(_recentDownClick, _recentDownClick + new Vector3(halfExtent.x * 2, 0, 0), Color.blue, 1f);   //debug box
+                Debug.DrawLine(_recentDownClick, _recentDownClick + new Vector3(0, 0, halfExtent.z * 2), Color.blue, 1f);
+
+                Debug.DrawLine(hit.point, hit.point - new Vector3(halfExtent.x * 2, 0, 0), Color.blue, 1f);   //debug box
+                Debug.DrawLine(hit.point, hit.point - new Vector3(0, 0, halfExtent.z * 2), Color.blue, 1f);
+
+
+                Debug.DrawLine(center + new Vector3(halfExtent.x, 1, 0), center + new Vector3(-halfExtent.x, 1, 0), Color.blue, 1f);  //debug cross-secntion
+                Debug.DrawLine(center + new Vector3(0, 1, halfExtent.z), center + new Vector3(0, 1, -halfExtent.z), Color.blue, 1f);
+
+                Debug.DrawLine(_recentDownClick + Vector3.up, _recentDownClick + new Vector3(halfExtent.x * 2, 1, 0), Color.blue, 1f);   //debug box
+                Debug.DrawLine(_recentDownClick + Vector3.up, _recentDownClick + new Vector3(0, 1, halfExtent.z * 2), Color.blue, 1f);
+
+                Debug.DrawLine(hit.point + Vector3.up, hit.point - new Vector3(halfExtent.x * 2, -1, 0), Color.blue, 1f);   //debug box
+                Debug.DrawLine(hit.point + Vector3.up, hit.point - new Vector3(0, -1, halfExtent.z * 2), Color.blue, 1f);
+                #endregion
+
+                Collider[] colliders = Physics.OverlapBox(center, halfExtent + Vector3.up);   //check for colliders within box
+                foreach (Collider col in colliders)
                 {
-                    Debug.Log("Drag Distance: " + deltaClick);
-                    Vector3 center = ((_recentDownClick - hit.point).normalized * deltaClick / 2) + _recentDownClick;
-                    Collider[] colliders = Physics.OverlapBox(center, Vector3.one * deltaClick);
-                    foreach(Collider col in colliders)
+                    Debug.DrawRay(col.transform.position, Vector3.up, Color.red, 1f);
+                    Debug.Log("Click-Drag Hit Collider");
+
+                    ClickableUnit tempUnit = col.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
+                    if (tempUnit != null)
                     {
-                        _targetUnit = col.gameObject.GetComponent<ClickableUnit>();
-                        _targetUnit?.RollCall();
-                        //create selection GROUP
+                        OnUnit?.Invoke(tempUnit);   //select the unit
+                        _targetUnit = tempUnit;
+                        _targetUnit.RollCall();
                     }
                 }
             }
+
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1))   //rightclick
@@ -76,7 +105,7 @@ public class PlayerInput : MonoBehaviour
                 OnClick?.Invoke(hit);
 
                 Debug.Log("Click on " + hit.transform.name);
-                _targetUnit?.IdentifyHit(hit);
+                _targetUnit?.IdentifyHit(hit);  //if we have a unit selected, when we RMB do something
             }
         }
     }
