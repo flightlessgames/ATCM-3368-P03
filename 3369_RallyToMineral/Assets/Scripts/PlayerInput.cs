@@ -6,7 +6,7 @@ using System;
 public class PlayerInput : MonoBehaviour
 {
     public event Action<RaycastHit> OnClick = delegate { };
-    public event Action<ClickableUnit> OnUnit = delegate { };
+    //public event Action<ClickableUnit> OnUnit = delegate { };
 
     public static ClickableUnit _targetUnit;  //todo GROUP
 
@@ -34,9 +34,7 @@ public class PlayerInput : MonoBehaviour
                 ClickableUnit tempUnit = hit.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
                 if (tempUnit != null)
                 {
-                    OnUnit?.Invoke(tempUnit);   //selects the unit
-                    _targetUnit = tempUnit;
-                    _targetUnit.RollCall();
+                    SelectUnit(tempUnit);
                 }
             }
         }
@@ -85,9 +83,7 @@ public class PlayerInput : MonoBehaviour
                     ClickableUnit tempUnit = col.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
                     if (tempUnit != null)
                     {
-                        OnUnit?.Invoke(tempUnit);   //select the unit
-                        _targetUnit = tempUnit;
-                        _targetUnit.RollCall();
+                        SelectUnit(tempUnit);
                     }
                 }
             }
@@ -108,5 +104,16 @@ public class PlayerInput : MonoBehaviour
                 _targetUnit?.IdentifyHit(hit);  //if we have a unit selected, when we RMB do something
             }
         }
+    }
+
+    private void SelectUnit(ClickableUnit tempUnit)
+    {
+        _targetUnit?.Deselect();
+
+
+        _targetUnit = tempUnit;
+        _targetUnit?.RollCall();
+
+        //OnUnit?.Invoke(_targetUnit);   //selects the unit
     }
 }

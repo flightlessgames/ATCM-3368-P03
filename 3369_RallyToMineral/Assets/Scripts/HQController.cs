@@ -7,10 +7,21 @@ public class HQController : ClickableUnit
 {
     public event Action<int> OnMineralGain = delegate { };
 
-    private int _minerals = 50;
-    private int _gas = 0;
+    public static ResourceData Minerals = null;
 
+    [Header("Required")]
     [SerializeField] MineralGroup _mineralGroup = null;
+
+    [Header("Settings")]
+    [SerializeField] ResourceData _mineralsData = null;
+
+    private void Awake()
+    {
+        if(Minerals == null)
+        {
+            Minerals = _mineralsData;
+        }
+    }
 
 
     protected override void InteractWithObject(GameObject target)
@@ -26,8 +37,9 @@ public class HQController : ClickableUnit
         {
             Debug.Log("Miner with Resources");
             //switch(miner.resourceEnum //case minerals
-            _minerals += miner.HoldingResources;
+            Minerals.currentResource += miner.HoldingResources;
             OnMineralGain?.Invoke(miner.HoldingResources);
+            Minerals.CallUpdate();
 
             miner.DepositResources(_mineralGroup);
         }
