@@ -32,10 +32,6 @@ public class MinerController : ClickableUnit
 
     protected override void InteractWithObject(GameObject target)
     {
-        Debug.Log("Interacting with " + target.transform.name);
-        //switch cases: minerals, structure, default
-        //strucures switch cases: command center, default
-
         switch (target.tag)
         {
             case "Mineral":
@@ -56,8 +52,6 @@ public class MinerController : ClickableUnit
     #region Mining Minerals
     public void FindMinerals(ResourcePatch mineral)
     {
-        Debug.Log("Found a Mineral Patch");
-
         ChildInvokeNewLocation(mineral.MiningPoint);
         _minerals = mineral;
         mineral.AddToQueue(this);
@@ -69,7 +63,6 @@ public class MinerController : ClickableUnit
 
     public void MineMinerals(int resourceValue)
     {
-        Debug.Log("Mining Minerals");
         _miningRoutine = StartCoroutine(MiningMineralsDelay(resourceValue));
     }
 
@@ -78,11 +71,9 @@ public class MinerController : ClickableUnit
         _isMining = true;
 
         yield return new WaitForSeconds(_timeToMine);
-        Debug.Log("End of Mining Timer");
 
         if (_isMining)
         {
-            Debug.Log("Completed Mining");
             _holdingResources = resourceValue;
             InteractWithObject(_headquarters.gameObject);//once we move towards HQ, implicit StopMining from Motor.OnMove
             
@@ -91,7 +82,6 @@ public class MinerController : ClickableUnit
 
     private void StopMining()
     {
-        Debug.Log("Stop Mining");
         if (_isMining)
             _isMining = false;
         
@@ -108,7 +98,6 @@ public class MinerController : ClickableUnit
     #region HQ
     private void ReturnResources(HQController hq)
     {
-        Debug.Log("Returning to Base");
         ChildInvokeNewLocation(_headquarters.transform.position);
     }
 

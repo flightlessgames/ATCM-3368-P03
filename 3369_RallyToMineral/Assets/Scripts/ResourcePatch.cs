@@ -49,12 +49,10 @@ public class ResourcePatch : MonoBehaviour
     {
         if(_miningQueue.Count <= _group.AverageQueue)   //if we are relatively empty compared to the mineral line
         {
-            Debug.Log("Added Miner to Queue");
             _miningQueue.Add(scv);
         }
         else
         {
-            Debug.Log("Finding a Neighbor");
             _group.FindNeighborPatch(scv);
         }
     }
@@ -65,7 +63,6 @@ public class ResourcePatch : MonoBehaviour
         {
             if(miner == scv)
             {
-                Debug.Log("Remove SCV from Queue");
                 _miningQueue.Remove(scv);
             }
         }
