@@ -34,9 +34,7 @@ public class PlayerInput : MonoBehaviour
                 ClickableUnit tempUnit = hit.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
                 if (tempUnit != null)
                 {
-                    OnUnit?.Invoke(tempUnit);   //selects the unit
-                    _targetUnit = tempUnit;
-                    _targetUnit.RollCall();
+                    SelectUnit(tempUnit);
                 }
             }
         }
@@ -80,14 +78,12 @@ public class PlayerInput : MonoBehaviour
                 foreach (Collider col in colliders)
                 {
                     Debug.DrawRay(col.transform.position, Vector3.up, Color.red, 1f);
-                    Debug.Log("Click-Drag Hit Collider");
 
                     ClickableUnit tempUnit = col.transform.GetComponent<ClickableUnit>();   //if collider has associated ClickableUnit script
                     if (tempUnit != null)
                     {
-                        OnUnit?.Invoke(tempUnit);   //select the unit
-                        _targetUnit = tempUnit;
-                        _targetUnit.RollCall();
+                        SelectUnit(tempUnit);
+
                     }
                 }
             }
@@ -104,9 +100,18 @@ public class PlayerInput : MonoBehaviour
             {
                 OnClick?.Invoke(hit);
 
-                Debug.Log("Click on " + hit.transform.name);
-                _targetUnit?.IdentifyHit(hit);  //if we have a unit selected, when we RMB do something
+                _targetUnit?.Identify(hit.transform.gameObject);  //if we have a unit selected, when we RMB do something
             }
         }
+    }
+
+    private void SelectUnit(ClickableUnit tempUnit)
+    {
+        _targetUnit?.Deselect();
+
+        _targetUnit = tempUnit;
+        _targetUnit?.RollCall();
+
+        OnUnit?.Invoke(_targetUnit);   //selects the unit
     }
 }
