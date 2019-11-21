@@ -7,6 +7,10 @@ public class ResourcePatch : MonoBehaviour
     [Header("Required")]
     [SerializeField] MineralGroup _group = null;
     private List<MinerController> _miningQueue = new List<MinerController>();
+    /* Using LIST instead of QUEUE
+     * SCV's can arrive in chaotic times to the resource,
+     * Allows removing SCV's at RandomAccess when called away to do other tasks
+     */
     public int MiningQueue { get { return _miningQueue.Count; } }
     public bool _activeMining = false;
 
@@ -37,11 +41,12 @@ public class ResourcePatch : MonoBehaviour
             float dist = (hq.transform.position - transform.position).magnitude;
             if (dist < minDist)
             {
-                _nearestHQ = hq;
+                _nearestHQ = hq; //temporary save, final "closest" becomes final value
+                minDist = dist; //set new value to compare
             }
         }
 
-        transform.LookAt(_nearestHQ.transform);
+        transform.LookAt(_nearestHQ.transform, Vector3.up);
         _closePoint = transform.position + transform.forward;
     }
 

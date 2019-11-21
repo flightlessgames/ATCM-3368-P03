@@ -30,12 +30,14 @@ public class BuildingRally : MonoBehaviour
     private void OnDisable()
     {
         _building.NewLocation -= CreateRally;
+        _gameManager.OnUnit -= OnSelect;
     }
 
     void CreateRally(Vector3 location)
     {
         Debug.Log("New Rally at: " + location);
-        _rallyParticles.transform.LookAt(location);
+        _rallyPoint = location;
+        _rallyParticles.transform.LookAt(_rallyPoint);
     }
 
 
@@ -48,8 +50,7 @@ public class BuildingRally : MonoBehaviour
             return;
         }
             
-
-        Debug.Log("This Building is Selected");
+        Debug.Log("This " + name + " is Selected");
         _isSelected = true;
 
         _rallyParticles.Play();

@@ -11,6 +11,7 @@ public class ResourceData : ScriptableObject
     [SerializeField] int initialResource = 0;
     
     [NonSerialized] public int currentResource;
+
     private void OnEnable()
     {
         currentResource = initialResource;
@@ -24,7 +25,7 @@ public class ResourceData : ScriptableObject
 
     public void Spend(int cost)
     {
-        Debug.Log("Reducing Current Resource by " + cost);
+        Debug.Log("Reducing " + name + " by " + cost);
         currentResource -= cost;
         CallUpdate();
     }

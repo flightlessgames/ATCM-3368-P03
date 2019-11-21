@@ -15,4 +15,8 @@ public class UnitData : ScriptableObject
 
     [SerializeField] float _time = 10;
     public float Time { get { return _time; } }
+
+    public ClickableUnit _unit;
+
+    public Sprite _image;
 }

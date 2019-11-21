@@ -100,7 +100,7 @@ public class PlayerInput : MonoBehaviour
             {
                 OnClick?.Invoke(hit);
 
-                _targetUnit?.Identify(hit.transform.gameObject);  //if we have a unit selected, when we RMB do something
+                _targetUnit?.Identify(hit);  //if we have a unit selected, when we RMB do something
             }
         }
     }

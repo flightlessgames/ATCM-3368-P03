@@ -1,39 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
+using static Utility;   //using a Utility Script to save typing
+
 
 public class ClickableUnit : MonoBehaviour
 {
     public event Action<Vector3> NewLocation = delegate { };
 
-    [SerializeField] CanvasGroup _buttonCanvas = null;
+    [Header("Settings")]
+    [SerializeField] CanvasGroup _unitCanvas = null;
+    [SerializeField] GameObject _buttonPanel = null;
 
-    protected void ChildInvokeNewLocation(Vector3 location)
+    protected void ChildInvokeNewLocation(Vector3 location) //special method to call from Child/Inherited Class, uses this/Parent event call
     {
         NewLocation?.Invoke(location);
     }
 
     public void RollCall()
     {
-        _buttonCanvas.gameObject.SetActive(true);
+        if(_buttonPanel != null)
+            ToggleCanvasGroup(1, _unitCanvas, _buttonPanel);
+        else
+            ToggleCanvasGroup(1, _unitCanvas);
     }
 
     public void Deselect()
     {
-        _buttonCanvas.gameObject.SetActive(false);
+        if (_buttonPanel != null)
+            ToggleCanvasGroup(0, _unitCanvas, _buttonPanel);
+        else
+            ToggleCanvasGroup(0, _unitCanvas);
     }
 
-    public void Identify(GameObject target)
+    public void Identify(RaycastHit hit)
     {
-        if (target.CompareTag("Ground"))
+        if (hit.transform.CompareTag("Ground"))
         {
-            NewLocation?.Invoke(target.transform.position);
+            NewLocation?.Invoke(hit.point);
         }
         else
         {
-            InteractWithObject(target);
+            InteractWithObject(hit.transform.gameObject);
         }
     }
 

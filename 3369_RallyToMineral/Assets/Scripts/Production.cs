@@ -9,8 +9,8 @@ public class Production : MonoBehaviour
 {
     public event Action<UnitData> OnProduce = delegate { };
 
-    [SerializeField] UnitData _productionUnit = null;
     [SerializeField] Button _button = null;
+    [SerializeField] UnitData _productionUnit = null;
 
     private void Awake()
     {

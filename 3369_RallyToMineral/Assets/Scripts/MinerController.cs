@@ -30,6 +30,11 @@ public class MinerController : ClickableUnit
         _motor.OnMove += StopMining;
     }
 
+    private void OnDisable()
+    {
+        _motor.OnMove -= StopMining;
+    }
+
     protected override void InteractWithObject(GameObject target)
     {
         switch (target.tag)
@@ -40,8 +45,9 @@ public class MinerController : ClickableUnit
                 break;
 
             case "Headquarters":
+                if(_headquarters.gameObject != target)
+                    _headquarters = target.transform.GetComponent<HQController>();
 
-                _headquarters = target.transform.GetComponent<HQController>();
                 ReturnResources(_headquarters);
                 break;
 
@@ -76,7 +82,6 @@ public class MinerController : ClickableUnit
         {
             _holdingResources = resourceValue;
             InteractWithObject(_headquarters.gameObject);//once we move towards HQ, implicit StopMining from Motor.OnMove
-            
         }
     }
 
@@ -98,7 +103,20 @@ public class MinerController : ClickableUnit
     #region HQ
     private void ReturnResources(HQController hq)
     {
-        ChildInvokeNewLocation(_headquarters.transform.position);
+        Transform returnPoint = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (Transform spot in _headquarters.ResourceReturnPoints)
+        {
+            float dist = (spot.position - transform.position).magnitude;
+            if (dist < minDist)
+            {
+                returnPoint = spot;
+                minDist = dist;
+            }
+        }
+
+        ChildInvokeNewLocation(returnPoint.position);
     }
 
     public void DepositResources(MineralGroup group)
