@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 138c4adaee8c62c4db83233dc5568a7a, type: 3}
   m_Name: SCV
   m_EditorClassIdentifier: 
-  _mineral: 0
-  _time: 6
+  _mineral: 5
+  _time: 2
   _unit: {fileID: 138368237978636207, guid: f70ffd93a3e736d49b4f6792c0856f16, type: 3}
   _image: {fileID: 21300000, guid: b52b72982e1a5ad4590b6ba556b57531, type: 3}

@@ -6,10 +6,8 @@ using System;
 [RequireComponent(typeof(BuildingRally))]
 public class HQController : ClickableUnit   //HQController might be childed further, inherit from "building" but only 1 building in this project. do as P.S. work
 {
-    
-    public event Action<int> OnMineralGain = delegate { };
     public event Action<List<UnitData>> OnUpdateQueue = delegate { }; //<generic<generic>> 
-    public event Action OnUnitSpawned = delegate { };
+    public event Action<UnitData> OnStartProduceUnit = delegate { };
 
     [Header("HQ - Required")]
     [SerializeField] MineralGroup _mineralGroup = null;
@@ -18,6 +16,7 @@ public class HQController : ClickableUnit   //HQController might be childed furt
     public Transform[] ResourceReturnPoints { get { return _pointsGroup; } }
 
     [SerializeField] List<Production> _productionButtons = new List<Production>();
+    [SerializeField] CancelProduction _cancelButton = null;
 
     private BuildingRally _rallyPoint = null;
     private Transform _spawnPoint = null;
@@ -43,29 +42,63 @@ public class HQController : ClickableUnit   //HQController might be childed furt
     private void OnEnable()
     {
         foreach(Production button in _productionButtons)
-        {
             button.OnProduce += ProduceUnit;
+
+        _cancelButton.OnCancel += CancelQueue;
+    }
+
+    private void OnDisable()
+    {
+        foreach (Production button in _productionButtons)
+            button.OnProduce -= ProduceUnit;
+
+        _cancelButton.OnCancel -= CancelQueue;
+    }
+
+    protected override void InteractWithObject(GameObject target)
+    {
+        switch (target.tag)
+        {
+            case "Mineral":
+                ChildInvokeNewLocation(target.transform.position);
+                break;
+            default:
+                Debug.Log("Not Implemented in HQController");
+                break;
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        MinerController miner = other.GetComponent<MinerController>();
+        if (miner.HoldingResources > 0)
+        {
+
+            //switch(miner.resourceEnum //case minerals
+            _mineralData.currentResource += miner.HoldingResources;
+            _mineralData.CallUpdate();
+
+            miner.DepositResources();
+        }
+    }
+
+    #region production
     void ProduceUnit(UnitData unit)
     {
         if (_mineralData.currentResource < unit.Mineral)//&&GasData.curr > Unit.gas && SupplyData.curr + Unit.supply < maxSupply
         {
-            Debug.Log("Cannot Produce " + unit.name);   //not enough minerals VO
             return;
         }
 
-        if(_productionQueue.Count >= 5) //invalid return architecture   //we only queue up to 5
+        if (_productionQueue.Count >= 5) //invalid return architecture   //we only queue up to 5
             return;
-        
-        Debug.Log("Producing " + unit.name);
+
         _mineralData.Spend(unit.Mineral);
         _productionQueue.Add(unit);
 
         OnUpdateQueue?.Invoke(_productionQueue);
 
-        if(_unitProduceRoutine == null) //if we are not currently producing,
+        if (_unitProduceRoutine == null) //if we are not currently producing,
             _unitProduceRoutine = StartCoroutine(UnitProduceRoutine()); //produce
     }
 
@@ -73,16 +106,15 @@ public class HQController : ClickableUnit   //HQController might be childed furt
     {
         //first, asses the front of the queue
         UnitData unit = _productionQueue[0];
+        OnStartProduceUnit?.Invoke(unit);
+
 
         //TODO ui timer, simulate UnitProductionRoutine
         yield return new WaitForSeconds(unit.Time);
 
         ClickableUnit unitObject = Instantiate(unit._unit.gameObject, _spawnPoint.position, _spawnPoint.rotation).GetComponent<ClickableUnit>(); //instantiate & asign
-        OnUnitSpawned?.Invoke();
 
         Vector3 rayStart = _rallyPoint.RallyPoint + (Vector3.up * 10);  //to re-create the Auto-Move, we're hijacking the PlayerInput algorithm
-        Debug.DrawRay(rayStart, Vector3.down * 10, Color.yellow, 1f);
-        Debug.Log(rayStart);
 
         RaycastHit hit;
 
@@ -105,40 +137,20 @@ public class HQController : ClickableUnit   //HQController might be childed furt
 
     public void CancelQueue()
     {
+        UnitData temp = _productionQueue[_productionQueue.Count - 1];
+        _mineralData.currentResource += temp.Mineral;
+        _mineralData.CallUpdate();
+
         _productionQueue.RemoveAt(_productionQueue.Count - 1);//count -1 is last position
+
         if (_productionQueue.Count < 1)
+        {
             StopCoroutine(_unitProduceRoutine); //if queue get reset to 0, stop production ASAP
+            _unitProduceRoutine = null;
+        }
 
         //TODO ui event invoke unit cancelled (simulate through unit produced invoke?)
         OnUpdateQueue?.Invoke(_productionQueue);
     }
-
-    protected override void InteractWithObject(GameObject target)
-    {
-        Debug.Log("Not Implemented in HQController");
-        switch (target.tag)
-        {
-            case "Mineral":
-                ChildInvokeNewLocation(target.transform.position);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        MinerController miner = other.GetComponent<MinerController>();
-        if (miner.HoldingResources > 0)
-        {
-
-            //switch(miner.resourceEnum //case minerals
-            _mineralData.currentResource += miner.HoldingResources;
-            _mineralData.CallUpdate();
-
-            OnMineralGain?.Invoke(miner.HoldingResources);
-
-            miner.DepositResources(_mineralGroup);
-        }
-    }
+    #endregion
 }

@@ -11,8 +11,6 @@ public class Utility
         Canvas cnv = group.transform.GetComponent<Canvas>();
         if (cnv != null)
             cnv.sortingOrder = (int)value;
-
-        Debug.Log(group.transform.name + " is set to " + value);
     }
 
     public static void ToggleCanvasGroup(float value, CanvasGroup group, GameObject other)
@@ -31,7 +29,5 @@ public class Utility
         Canvas cnv = group.transform.GetComponent<Canvas>();
         if (cnv != null)
             cnv.sortingOrder = (int)value;
-
-        Debug.Log(group.transform.name + " is set to " + value);
     }
 }

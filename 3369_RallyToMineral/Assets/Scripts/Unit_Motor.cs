@@ -28,7 +28,5 @@ public class Unit_Motor : MonoBehaviour
     {
         _agent.destination = position;
         OnMove?.Invoke();
-        Debug.DrawRay(position, Vector3.up * 5f, Color.red, 1f);
-
     }
 }

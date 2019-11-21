@@ -106,25 +106,23 @@ public class MinerController : ClickableUnit
         Transform returnPoint = null;
         float minDist = Mathf.Infinity;
 
-        foreach (Transform spot in _headquarters.ResourceReturnPoints)
+        foreach (Transform HQDeposit in _headquarters.ResourceReturnPoints) //like ResoursePatch, searches for nearest POINT on HQ, using saved HQ from resource assignment.
         {
-            float dist = (spot.position - transform.position).magnitude;
+            float dist = (HQDeposit.position - transform.position).magnitude;
             if (dist < minDist)
             {
-                returnPoint = spot;
+                returnPoint = HQDeposit;
                 minDist = dist;
             }
         }
-
         ChildInvokeNewLocation(returnPoint.position);
     }
 
-    public void DepositResources(MineralGroup group)
+    public void DepositResources()    //odd name, but this is for when adjacent to HQ, causes "unload" resources and go find new resource to mine
     {
         _holdingResources = 0;
 
-        //switch resourcesEnum  //case minerals
-        group.FindNeighborPatch(this);
+        FindMinerals(_minerals);    //goes towards saved mineralpatch, begins search routine if minerals are occupied
     }
     #endregion
 }

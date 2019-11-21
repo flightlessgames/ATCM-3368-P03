@@ -18,16 +18,14 @@ public class ResourceData : ScriptableObject
         CallUpdate();
     }
 
-    public void CallUpdate()
-    {
-        OnUpdateResource?.Invoke(currentResource);
-    }
-
     public void Spend(int cost)
     {
-        Debug.Log("Reducing " + name + " by " + cost);
         currentResource -= cost;
         CallUpdate();
     }
 
+    public void CallUpdate()
+    {
+        OnUpdateResource?.Invoke(currentResource);
+    }
 }

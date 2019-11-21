@@ -35,7 +35,6 @@ public class BuildingRally : MonoBehaviour
 
     void CreateRally(Vector3 location)
     {
-        Debug.Log("New Rally at: " + location);
         _rallyPoint = location;
         _rallyParticles.transform.LookAt(_rallyPoint);
     }
@@ -50,7 +49,6 @@ public class BuildingRally : MonoBehaviour
             return;
         }
             
-        Debug.Log("This " + name + " is Selected");
         _isSelected = true;
 
         _rallyParticles.Play();
